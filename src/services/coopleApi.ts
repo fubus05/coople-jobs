@@ -15,12 +15,16 @@ export interface Job {
   periodTo: number;
   datePublished: number;
   branchLink?: string;
-  [key: string]: any;
 }
 
 export interface JobsListResponse {
   status: number;
   data: { items: Job[] };
+}
+
+export interface JobResponse {
+  status: number;
+  data: Job;
 }
 
 export const coopleApi = createApi({
@@ -30,7 +34,7 @@ export const coopleApi = createApi({
     listJobs: builder.query<JobsListResponse, { pageNum: number; pageSize: number }>({
       query: ({ pageNum, pageSize }: { pageNum: number; pageSize: number }) => 
         `list?pageNum=${pageNum}&pageSize=${pageSize}`    }),
-    getJob: builder.query<Job, string>({
+    getJob: builder.query<JobResponse, string>({
       query: (id: string) => id
     })
   })

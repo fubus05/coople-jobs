@@ -14,7 +14,13 @@ import { View, Text, Image } from 'react-native';
 import { CoopleLogo } from './components/CoopleLogo';
 
 const Tab = createBottomTabNavigator();
-const RootStack = createStackNavigator();
+
+type RootStackParamList = {
+  MainTabs: undefined;
+  JobDetails: { id: string };
+};
+
+const RootStack = createStackNavigator<RootStackParamList>();
 
 const LogoTitle = ({ title }: { title: string }) => (
   <View style={{ flexDirection: 'row', alignItems: 'center', overflow: 'visible' }}>
@@ -28,15 +34,16 @@ function MainTabs() {
     <Tab.Navigator
       screenOptions={({ route }) => ({
         tabBarIcon: ({ color, size, focused }) => {
-          let iconName;
+          let iconName: keyof typeof Ionicons.glyphMap;
           if (route.name === 'Jobs') iconName = focused ? 'briefcase' : 'briefcase-outline';
           else if (route.name === 'Favourites') iconName = focused ? 'star' : 'star-outline';
-          return <Ionicons name={iconName as any} size={size} color={color} />;
+          else iconName = 'help-outline'; // fallback
+          return <Ionicons name={iconName} size={size} color={color} />;
         },
         tabBarActiveTintColor: '#f50057',
         tabBarInactiveTintColor: '#888',
         tabBarLabelStyle: { fontWeight: 'bold', fontSize: 13 },
-        tabBarStyle: { paddingBottom: 4, height: 90 },
+        tabBarStyle: { paddingBottom: 4, height: 60 },
         headerShown: true,
         headerTitle: () => <LogoTitle title={route.name} />,
         headerStyle: { backgroundColor: '#fff0f5', shadowColor: 'transparent' },

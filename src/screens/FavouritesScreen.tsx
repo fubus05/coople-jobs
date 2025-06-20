@@ -2,7 +2,7 @@ import React from 'react';
 import { View, FlatList, Text, StyleSheet } from 'react-native';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from '../store';
-import { Job } from '../services/coopleApi';
+import { Job, JobsListResponse } from '../services/coopleApi';
 import { JobCard } from '../components/JobCard';
 import { toggle } from '../features/favourites/favouritesSlice';
 
@@ -12,15 +12,24 @@ interface FavouritesScreenProps {
   };
 }
 
+interface QueryCache {
+  data?: JobsListResponse;
+  status?: string;
+}
+
+interface ApiState {
+  queries?: Record<string, QueryCache>;
+}
+
 export default function FavouritesScreen({ navigation }: FavouritesScreenProps) {
   const favourites = useSelector((state: RootState) => state.favourites.ids);
   const allJobsCache = useSelector(
-    (state: RootState) => (state['coopleApi'] as { queries?: Record<string, any> })?.queries || {}
+    (state: RootState) => (state['coopleApi'] as ApiState)?.queries || {}
   );
   const dispatch = useDispatch();
 
   const jobsMap = new Map<string, Job>();
-  Object.values(allJobsCache).forEach((query: any) => {
+  Object.values(allJobsCache).forEach((query: QueryCache) => {
     if (query?.data?.data?.items) {
       query.data.data.items.forEach((job: Job) => {
         if (favourites.includes(job.workAssignmentId)) {

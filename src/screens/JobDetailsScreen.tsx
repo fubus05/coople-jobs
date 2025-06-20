@@ -1,6 +1,14 @@
 import React from 'react'
 import { ScrollView, Text, ActivityIndicator, View, StyleSheet, Linking, TouchableOpacity } from 'react-native'
 import { useGetJobQuery } from '../services/coopleApi'
+import { StackScreenProps } from '@react-navigation/stack'
+
+type RootStackParamList = {
+  MainTabs: undefined;
+  JobDetails: { id: string };
+};
+
+type Props = StackScreenProps<RootStackParamList, 'JobDetails'>;
 
 function formatDate(timestamp: number): string {
   const ts = timestamp > 1e12 ? Math.floor(timestamp / 1000) : timestamp;
@@ -8,7 +16,7 @@ function formatDate(timestamp: number): string {
   return date.toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' });
 }
 
-export default function JobDetailsScreen({ route }: { route: any }) {
+const JobDetailsScreen = ({ route, navigation }: Props) => {
   const { id } = route.params
   const { data, isLoading, error } = useGetJobQuery(id)
 
@@ -29,7 +37,7 @@ export default function JobDetailsScreen({ route }: { route: any }) {
         <Text style={styles.label}>Period:</Text>
         <Text style={styles.value}>{formatDate(job.periodFrom)} — {formatDate(job.periodTo)}</Text>
         {job.branchLink && (
-          <TouchableOpacity onPress={() => Linking.openURL(job.branchLink)}>
+          <TouchableOpacity onPress={() => job.branchLink && Linking.openURL(job.branchLink)}>
             <Text style={styles.link}>More about this job</Text>
           </TouchableOpacity>
         )}
@@ -37,6 +45,8 @@ export default function JobDetailsScreen({ route }: { route: any }) {
     </ScrollView>
   )
 }
+
+export default JobDetailsScreen
 
 const styles = StyleSheet.create({
   container: {
